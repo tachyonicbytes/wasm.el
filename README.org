@@ -1,0 +1,8 @@
+An attempt to build a wasm3 module for Emacs
+
+Resources:
+- https://phst.eu/emacs-modules.html
+- http://diobla.info/blog-archive/modules-tut.html
+- https://nullprogram.com/blog/2016/11/05/
+- https://nullprogram.com/blog/2017/02/14/
+- https://nullprogram.com/blog/2020/01/22/
