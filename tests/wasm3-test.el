@@ -4,4 +4,4 @@
 (require 'wasm3)
 
 (ert-deftest wasm3--sanity-test ()
-  (should (eq (wasm3-test) 5)))
+  (should (eq (wasm3-test "wasm3/test/lang/fib.c.wasm") 5)))
