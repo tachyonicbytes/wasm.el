@@ -15,54 +15,49 @@
 /* Declare mandatory GPL symbol.  */
 int plugin_is_GPL_compatible;
 
-bool
-read_binary(char *filename, uint8_t **buffer, size_t *size) {
-    FILE* in_file = fopen(filename, "rb");
-    if (!in_file) {
-        perror("fopen");
-        return false;
-    }
+bool read_binary(char *filename, uint8_t **buffer, size_t *size) {
+  FILE *in_file = fopen(filename, "rb");
+  if (!in_file) {
+    perror("fopen");
+    return false;
+  }
 
-    struct stat sb;
-    if (stat(filename, &sb) == -1) {
-        perror("stat");
-        return false;
-    }
-    *size = sb.st_size;
-    *buffer = malloc(sb.st_size);
-    fread(*buffer, sb.st_size, 1, in_file);
-    fclose(in_file);
+  struct stat sb;
+  if (stat(filename, &sb) == -1) {
+    perror("stat");
+    return false;
+  }
+  *size = sb.st_size;
+  *buffer = malloc(sb.st_size);
+  fread(*buffer, sb.st_size, 1, in_file);
+  fclose(in_file);
 
-    return true;
+  return true;
 }
 
 /* https://phst.eu/emacs-modules.html#copy_string_contents */
-static bool
-copy_string_contents (emacs_env *env, emacs_value value,
-                      char **buffer, size_t *size)
-{
+static bool copy_string_contents(emacs_env *env, emacs_value value,
+                                 char **buffer, size_t *size) {
   ptrdiff_t buffer_size;
-  if (!env->copy_string_contents (env, value, NULL, &buffer_size))
+  if (!env->copy_string_contents(env, value, NULL, &buffer_size))
     return false;
-  assert (env->non_local_exit_check (env) == emacs_funcall_exit_return);
-  assert (buffer_size > 0);
-  *buffer = malloc ((size_t) buffer_size);
-  if (*buffer == NULL)
-    {
-      env->non_local_exit_signal (env, env->intern (env, "memory-full"),
-                                  env->intern (env, "nil"));
-      return false;
-    }
+  assert(env->non_local_exit_check(env) == emacs_funcall_exit_return);
+  assert(buffer_size > 0);
+  *buffer = malloc((size_t)buffer_size);
+  if (*buffer == NULL) {
+    env->non_local_exit_signal(env, env->intern(env, "memory-full"),
+                               env->intern(env, "nil"));
+    return false;
+  }
   ptrdiff_t old_buffer_size = buffer_size;
-  if (!env->copy_string_contents (env, value, *buffer, &buffer_size))
-    {
-      free (*buffer);
-      *buffer = NULL;
-      return false;
-    }
-  assert (env->non_local_exit_check (env) == emacs_funcall_exit_return);
-  assert (buffer_size == old_buffer_size);
-  *size = (size_t) (buffer_size - 1);
+  if (!env->copy_string_contents(env, value, *buffer, &buffer_size)) {
+    free(*buffer);
+    *buffer = NULL;
+    return false;
+  }
+  assert(env->non_local_exit_check(env) == emacs_funcall_exit_return);
+  assert(buffer_size == old_buffer_size);
+  *size = (size_t)(buffer_size - 1);
   return true;
 }
 
@@ -88,7 +83,9 @@ static emacs_value Fwasm3_test(emacs_env *env, int nargs, emacs_value args[],
 
   IM3Environment e = m3_NewEnvironment();
 
-  IM3Runtime r = m3_NewRuntime(e, 1024, NULL);
+  /* TODO: We now instantiate the runtime with the module size. Not sure this
+   * always mean the module fits. */
+  IM3Runtime r = m3_NewRuntime(e, wasm_size, NULL);
 
   IM3Module m;
   /* for now, we just hardcode the fib.c.wasm module at test level. */
