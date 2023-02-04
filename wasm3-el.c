@@ -79,6 +79,9 @@ static emacs_value Fwasm3_test(emacs_env *env, int nargs, emacs_value args[],
   char *module_name;
   size_t module_size;
   copy_string_contents(env, args[0], &module_name, &module_size);
+  char *function_name;
+  size_t function_name_size;
+  copy_string_contents(env, args[1], &function_name, &function_name_size);
   uint8_t *wasm_bytes;
   size_t wasm_size;
   read_binary(module_name, &wasm_bytes, &wasm_size);
@@ -99,10 +102,10 @@ static emacs_value Fwasm3_test(emacs_env *env, int nargs, emacs_value args[],
     /* printf("Error loading module: %s\n", result); */
     return 1;
   }
-  printf("%s\n", m3_GetModuleName(m));
+  /* printf("%s\n", m3_GetModuleName(m)); */
 
   IM3Function f = NULL;
-  result = m3_FindFunction(&f, r, "fib");
+  result = m3_FindFunction(&f, r, function_name);
   if (result) {
     /* printf("Error finding function: %s\n", result); */
     return 1;
@@ -171,8 +174,8 @@ int emacs_module_init(struct emacs_runtime *ert) {
 
   /* create a lambda (returns an emacs_value) */
   emacs_value fun = env->make_function(
-      env, 1,      /* min. number of arguments */
-      1,           /* max. number of arguments */
+      env, 2,      /* min. number of arguments */
+      2,           /* max. number of arguments */
       Fwasm3_test, /* actual function pointer */
       "doc",       /* docstring */
       NULL         /* user pointer of your choice (data param in Fmymod_test) */
