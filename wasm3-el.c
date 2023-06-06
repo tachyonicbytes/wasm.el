@@ -178,8 +178,8 @@ int emacs_module_init(struct emacs_runtime *ert) {
       NULL         /* user pointer of your choice (data param in Fmymod_test) */
   );
 
-  bind_function(env, "wasm3-test", fun);
-  provide(env, "wasm3");
+  bind_function(env, "wasm-test", fun);
+  provide(env, "wasm");
 
   /* loaded successfully */
   return 0;

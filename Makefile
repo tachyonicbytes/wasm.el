@@ -12,26 +12,26 @@ SUFFIX  = $(shell $(EMACS) --batch --eval '(princ module-file-suffix)')
 
 .PHONY: test
 
-all: clone-submodules build-wasm3 wasm3$(SUFFIX)
+all: clone-submodules build-wasm3 wasm$(SUFFIX)
 
 # We need the wasm3 submodule, update it just in case
 clone-submodules:
-	git submodule update --remote
+	git submodule update --init --recursive #git submodule update --remote
 
 build-wasm3:
-	cd wasm3 && mkdir -p build && cd build && cmake .. && make
+	cd wasm3 && mkdir -p build && cd build && cmake -DCMAKE_POSITION_INDEPENDENT_CODE=ON .. && make
 
-wasm3$(SUFFIX): wasm3-el.o
-	$(LD) -shared $(LDFLAGS) -o wasm3$(SUFFIX) $<
+wasm$(SUFFIX): wasm3-el.o
+	$(LD) -shared -fPIC -o wasm$(SUFFIX) $< $(LDFLAGS)
 
 # compile source file to object file
 wasm3-el.o: wasm3-el.c
-	$(CC) $(CFLAGS) $(LDFLAGS) -I$(ROOT)/src -fPIC -c wasm3-el.c
+	$(CC) -c wasm3-el.c $(CFLAGS) -I$(ROOT)/src $(LDFLAGS)
 
 start:
 	$(EMACS) -nw -Q -L .
 
-run: wasm3$(SUFFIX)
+run: wasm$(SUFFIX)
 	$(EMACS) -Q -L . -l demo.el -f demo
 
 test:
