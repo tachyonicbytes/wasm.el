@@ -1,6 +1,13 @@
-An attempt to build a wasm3 module for Emacs
+An attempt to build a wasm module for Emacs, using wasm3.
 
-Resources:
+To compile and run tests:
+
+#+begin_src bash
+  make
+  make test
+#+end_src
+
+Emacs dynamic modules resources:
 - https://phst.eu/emacs-modules.html
 - http://diobla.info/blog-archive/modules-tut.html
 - https://nullprogram.com/blog/2016/11/05/
