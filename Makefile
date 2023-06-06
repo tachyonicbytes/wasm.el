@@ -38,4 +38,4 @@ test:
 	$(EMACS) -batch -L . -l ert -l tests/wasm3-test.el -f ert-run-tests-batch-and-exit
 
 clean:
-	rm -rf wasm3/build/ wasm3$(SUFFIX) wasm3-el.o
+	rm -rf wasm3/build/ wasm$(SUFFIX) wasm3-el.o
